@@ -7,17 +7,30 @@ module CandyMachine where
      data Input = Coin | Turn deriving (Eq, Show)
 
      action :: Input -> State Machine (Int,Int)
-     action x = State { run = \machine -> update x machine }
+     action x = State $ 
+          \machine -> update x machine 
      
+     id0 :: State Machine (Int,Int)
+     id0 = State $
+          \machine -> (machine, (candies machine, coins machine))
+
      update :: Input -> Machine -> (Machine, (Int,Int))
      update Coin (Machine locked candies coins) 
           | candies == 0                  = (Machine locked 0 coins, (0,coins))
           | locked == True && candies > 0 = (Machine False candies (coins+1), (candies,coins+1)) 
           | otherwise                     = (Machine locked candies coins, (candies, coins))
      update Turn (Machine locked candies coins)
-          | locked == False = (Machine True 0 coins, (0,coins))
-          | candies == 0    = (Machine locked 0 coins, (0,coins))
-          | otherwise       = (Machine locked candies coins, (candies, coins))
+          | locked == False && candies > 0 = (Machine True (candies-1) coins, (candies-1,coins))
+          | candies == 0                   = (Machine locked 0 coins, (0,coins))
+          | otherwise                      = (Machine locked candies coins, (candies, coins))
 
+     andThen :: State Machine (Int,Int) -> State Machine (Int,Int) -> State Machine (Int,Int) 
+     m1 `andThen` m2 = State $
+          \s0 ->
+               let (s1,t1) = (run m1) s0
+                   (s2,t2) = (run m2) s1
+               in  (s2,t2)     
+   
      simulateMachine :: [Input] -> State Machine (Int,Int)
-     simulateMachine (h:t) = action h
+     simulateMachine (h:t) = action h `andThen` simulateMachine t
+     simulateMachine []    = id0 
