@@ -10,10 +10,6 @@ module CandyMachine where
      action x = State $ 
           \machine -> update x machine 
      
-     id0 :: State Machine (Int,Int)
-     id0 = State $
-          \machine -> (machine, (candies machine, coins machine))
-
      update :: Input -> Machine -> (Machine, (Int,Int))
      update Coin (Machine locked candies coins) 
           | candies == 0                  = (Machine locked 0 coins, (0,coins))
@@ -33,4 +29,4 @@ module CandyMachine where
    
      simulateMachine :: [Input] -> State Machine (Int,Int)
      simulateMachine (h:t) = action h `andThen` simulateMachine t
-     simulateMachine []    = id0 
+     simulateMachine []    = State $ \machine -> (machine, (candies machine, coins machine))      
