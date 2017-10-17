@@ -29,5 +29,4 @@ module CandyMachine where
    
      simulateMachine :: [Input] -> State Machine (Int,Int)
      simulateMachine (h:t) = action h `andThen` simulateMachine t
-     simulateMachine []    = State $
-                                  \machine -> (machine, (candies machine, coins machine))      
+     simulateMachine []    = State $ \machine -> (machine, (candies machine, coins machine))      

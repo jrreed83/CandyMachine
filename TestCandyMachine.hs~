@@ -6,7 +6,7 @@ module TestCandyMachine where
      inputs = [Coin,Turn,Coin,Turn,Coin,Turn,Coin,Turn]
      fn     = CandyMachine.run $ simulateMachine inputs
      result = snd $ fn (Machine True 5 10)
-     test1  = TestCase (assertEqual "test" result (14,14))
+     test1  = TestCase (assertEqual "test" result (1,14))
     
      tests = TestList [TestLabel "test1" test1]
 
