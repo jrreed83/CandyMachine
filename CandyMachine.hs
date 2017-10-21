@@ -8,14 +8,14 @@ module CandyMachine where
 
      action :: Input -> State Machine (Int,Int)
      action x = State $ 
-          \machine -> update x machine 
+          \machine -> step x machine 
      
-     update :: Input -> Machine -> (Machine, (Int,Int))
-     update Coin (Machine locked candies coins) 
+     step :: Input -> Machine -> (Machine, (Int,Int))
+     step Coin (Machine locked candies coins) 
           | candies == 0                  = (Machine locked 0 coins, (0,coins))
           | locked == True && candies > 0 = (Machine False candies (coins+1), (candies,coins+1)) 
           | otherwise                     = (Machine locked candies coins, (candies, coins))
-     update Turn (Machine locked candies coins)
+     step Turn (Machine locked candies coins)
           | locked == False && candies > 0 = (Machine True (candies-1) coins, (candies-1,coins))
           | candies == 0                   = (Machine locked 0 coins, (0,coins))
           | otherwise                      = (Machine locked candies coins, (candies, coins))
